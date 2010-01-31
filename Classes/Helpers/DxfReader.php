@@ -71,7 +71,7 @@ class Tx_Gg_Ch_DxfReader {
 	 * 
 	 * @return	void
 	 */
-	protected function parseHEADER() {echo "parseHEADER\n";
+	protected function parseHEADER() {
 		$this->consume('0')->consume('SECTION');
 		$this->consume('2')->consume('HEADER');
 
@@ -89,7 +89,7 @@ class Tx_Gg_Ch_DxfReader {
 	 * 
 	 * @return	void
 	 */
-	protected function parseTABLES() {echo "parseTABLES\n";
+	protected function parseTABLES() {
 		$this->consume('0')->consume('SECTION');
 		$this->consume('2')->consume('TABLES');
 
@@ -111,7 +111,7 @@ class Tx_Gg_Ch_DxfReader {
 	 * 
 	 * @return	void
 	 */
-	protected function parseBLOCKS() {echo "parseBLOCKS\n";
+	protected function parseBLOCKS() {
 		$this->consume('0')->consume('SECTION');
 		$this->consume('2')->consume('BLOCKS');
 
@@ -129,7 +129,7 @@ class Tx_Gg_Ch_DxfReader {
 	 * 
 	 * @return	void
 	 */
-	protected function parseENTITIES() {echo "parseENTITIES\n";
+	protected function parseENTITIES() {
 		$this->consume('0')->consume('SECTION');
 		$this->consume('2')->consume('ENTITIES');
 
@@ -151,7 +151,7 @@ class Tx_Gg_Ch_DxfReader {
 	 * 
 	 * @return	array
 	 */
-	protected function parseTABLE() {echo "parseTABLE\n";
+	protected function parseTABLE() {
 		$table = array();
 
 		$this->consume('0');
@@ -193,7 +193,7 @@ class Tx_Gg_Ch_DxfReader {
 	 * @param	string		$tableName
 	 * @return	array
 	 */
-	protected function parseTABLEitem($tableName) {echo "parseTABLEitem($tableName)\n";
+	protected function parseTABLEitem($tableName) {
 		$item = array();
 
 		$this->consume('0');
@@ -229,7 +229,7 @@ class Tx_Gg_Ch_DxfReader {
 	 * 
 	 * @return	array
 	 */
-	protected function parseENTITY() { echo "parseENTITY\n";
+	protected function parseENTITY() {
 		$entity = array();
 
 		$this->consume('0');
@@ -290,7 +290,7 @@ class Tx_Gg_Ch_DxfReader {
 	 * @param	string		$layer
 	 * @return	array
 	 */
-	protected function parseVERTEX($layer) { echo "parseVERTEX\n";
+	protected function parseVERTEX($layer) {
 		$vertex = array();
 
 		$token = $this->readLine();
