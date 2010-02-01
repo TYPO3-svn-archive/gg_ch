@@ -32,7 +32,7 @@
  * @license     http://www.gnu.org/copyleft/gpl.html
  * @version     SVN: $Id$
  */
-class Tx_Gg_Ch_DxfReader {
+class Tx_Gg_Ch_Helpers_DxfReader {
 
 	protected $filename;
 	protected $handle;
@@ -319,7 +319,7 @@ class Tx_Gg_Ch_DxfReader {
 	/**
 	 * Consumes a token from the input stream.
 	 * 
-	 * @return	DxfReader		This instance to allow method chaining
+	 * @return	Tx_Gg_Ch_Helpers_DxfReader		This instance to allow method chaining
 	 */
 	protected function consume($str) {
 		$line = $this->readLine();
@@ -332,7 +332,7 @@ class Tx_Gg_Ch_DxfReader {
 	/**
 	 * "Unconsumes" a token from the input stream.
 	 * 
-	 * @return	DxfReader		this instance to allow method chaining
+	 * @return	Tx_Gg_Ch_Helpers_DxfReader		this instance to allow method chaining
 	 */
 	protected function unconsume($str) {
 		$this->buffer = $str . "\n" . $this->buffer;
@@ -362,8 +362,28 @@ class Tx_Gg_Ch_DxfReader {
 
 }
 
-$reader = new Tx_Gg_Ch_DxfReader('../../Resources/Private/demo.dxf');
+$reader = new Tx_Gg_Ch_Helpers_DxfReader('../../Resources/Private/demo.dxf');
 $data = $reader->parse();
 
-print_r($data);
+// -----------------------------
+
+require_once('Coordinates.php');
+
+function ggPolylineToGgmapOverlay(array $polyline) {	
+	if ($polyline['type'] !== 'POLYLINE') {
+		throw new Exception('Not a GG polyline.', 1265008560);
+	}
+	$ggmapVertices = array();
+	foreach ($polyline['vertices'] as $vertex) {
+		$x = $vertex['x'];
+		$y = $vertex['y'];
+		$lat = Tx_Gg_Ch_Helpers_Coordinates::CHtoWGSlat($x, $y);
+		$lng = Tx_Gg_Ch_Helpers_Coordinates::CHtoWGSlong($x, $y);
+		$ggmapVertices[] = array($lat, $lng);
+	}
+	return $ggmapVertices;
+}
+
+$gemeinde = $data['ENTITIES'][33];
+print_r(ggPolylineToGgmapOverlay($gemeinde));
 ?>
