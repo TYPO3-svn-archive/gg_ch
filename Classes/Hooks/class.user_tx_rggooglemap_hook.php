@@ -47,7 +47,7 @@ class user_tx_rggooglemap_hook {
 		// -----------------------------------------------
 		// REGION [start]
 
-		$filename = t3lib_extMgm::extPath('gg_ch') . 'Resources/Private/demo.dxf';
+		$filename = t3lib_extMgm::extPath('gg_ch') . 'Resources/Private/gg25.dxf';
 		$dxfReader = t3lib_div::makeInstance('tx_ggch_Helpers_DxfReader', $filename);
 		$data = $dxfReader->parse();
 
