@@ -38,6 +38,7 @@ class Tx_Gg_Ch_Helpers_DxfReader {
 	protected $handle;
 	protected $buffer;
 	protected $data = array();
+	protected $line;
 
 	/**
 	 * Creates a new instance of the Tx_Gg_Ch_DxfReader.
@@ -55,6 +56,8 @@ class Tx_Gg_Ch_Helpers_DxfReader {
 	 */
 	public function parse() {
 		$this->handle = fopen($this->filename, 'r');
+		$this->data = array();
+		$this->line = 0;
 
 		$this->parseHEADER();
 		$this->parseTABLES();
@@ -76,9 +79,7 @@ class Tx_Gg_Ch_Helpers_DxfReader {
 		$this->consume('2')->consume('HEADER');
 
 		$this->data['HEADER'] = array();
-		while ($this->readLine() !== '0') ;
-
-		$this->consume('ENDSEC');
+		while ($this->readLine() !== 'ENDSEC') ;
 	}
 
 	/**
@@ -324,7 +325,7 @@ class Tx_Gg_Ch_Helpers_DxfReader {
 	protected function consume($str) {
 		$line = $this->readLine();
 		if ($line !== $str) {
-			die("consume() failed. Expected: $str, found: $line\n");
+			die($this->filename . ':' . $this->line . ': consume() failed. Expected: ' . $str . ', found: ' . $line . "\n");
 		}
 		return $this;
 	}
@@ -335,6 +336,7 @@ class Tx_Gg_Ch_Helpers_DxfReader {
 	 * @return	Tx_Gg_Ch_Helpers_DxfReader		this instance to allow method chaining
 	 */
 	protected function unconsume($str) {
+		$this->line--;
 		$this->buffer = $str . "\n" . $this->buffer;
 		return $this;
 	}
@@ -357,6 +359,7 @@ class Tx_Gg_Ch_Helpers_DxfReader {
 			$line = rtrim($this->buffer, "\r");
 			$this->buffer = '';
 		}
+		$this->line++;
 		return trim($line);
 	}
 
