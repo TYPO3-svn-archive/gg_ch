@@ -39,6 +39,7 @@ class user_tx_rggooglemap_hook {
 	 * 
 	 * @param	array		$params
 	 * @param	tx_rggooglemap_pi1		$pObj
+	 * @return	void
 	 */
 	public function prepareDataset(array $params, tx_rggooglemap_pi1 $pObj) {
 		$pObj->xmlStartLevel('regions');
@@ -46,29 +47,15 @@ class user_tx_rggooglemap_hook {
 		// -----------------------------------------------
 		// REGION [start]
 
-		$vertices = array();
-		$vertices[] = array(46.773451, 7.184417);
-		$vertices[] = array(46.78068, 7.181589);
-		$vertices[] = array(46.77955, 7.160769);
-		$vertices[] = array(46.787909, 7.163307);
-		$vertices[] = array(46.785972, 7.152751);
-		$vertices[] = array(46.78068, 7.145024);
-		$vertices[] = array(46.773451, 7.142196);
-		$vertices[] = array(46.766222, 7.145024);
-		$vertices[] = array(46.76093, 7.152751);
-		$vertices[] = array(46.758993, 7.163307);
-		$vertices[] = array(46.76093, 7.173862);
-		$vertices[] = array(46.766222, 7.181589);
-		$vertices[] = array(46.773451, 7.184417);
+		$filename = t3lib_extMgm::extPath('gg_ch') . 'Resources/Private/demo.dxf';
+		$dxfReader = t3lib_div::makeInstance('tx_ggch_Helpers_DxfReader', $filename);
+		$data = $dxfReader->parse();
 
-		$serializedVertices = '';
-		foreach ($vertices as $vertex) {
-			if ($serializedVertices !== '') $serializedVertices .= ',';
-			$serializedVertices .= $vertex[0] . ',' . $vertex[1];
-		}
+		$gemeinde = $data['ENTITIES'][33];
+		$vertices = $this->polylineToGgmapOverlay($gemeinde);
 
 		$attributes = array(
-			'vertices' => $serializedVertices,
+			'vertices' => $this->serializeVertices($vertices),
 			'strokeColor' => '#FF0000',
 			'strokeWeight' => '2',
 			'strokeOpacity' => '.5',
@@ -88,6 +75,7 @@ class user_tx_rggooglemap_hook {
 	 * Returns JavaScript code to be used to process the prepared dataset.
 	 * 
 	 * @param	tx_rggooglemap_pi1		$pObj
+	 * @return	string		JavaScript code
 	 */
 	public function getDatasetJSProcessing(tx_rggooglemap_pi1 $pObj) {
 		return <<<EOT
@@ -110,6 +98,46 @@ class user_tx_rggooglemap_hook {
 			}
 EOT;
 	}
+
+	/**
+	 * Converts CH1903 coordinates (from GG25 data) in a POLYLINE to
+	 * latitude/longitude to be used by GoogleMap.
+	 * 
+	 * @param	array		$polyline
+	 * @return	array
+	 */
+	protected function polylineToGgmapOverlay(array $polyline) {	
+		if ($polyline['type'] !== 'POLYLINE') {
+			throw new Exception('Not a GG polyline.', 1265008560);
+		}
+		$ggmapVertices = array();
+		foreach ($polyline['vertices'] as $vertex) {
+			$x = $vertex['x'];
+			$y = $vertex['y'];
+			$lat = tx_ggch_Helpers_Coordinates::CHtoWGSlat($x, $y);
+			$lng = tx_ggch_Helpers_Coordinates::CHtoWGSlong($x, $y);
+			$ggmapVertices[] = array($lat, $lng);
+		}
+		return $ggmapVertices;
+	}
+
+	/**
+	 * Serializes an array of vertices.
+	 * 
+	 * @param	array		$vertices
+	 * @return	string
+	 */
+	protected function serializeVertices(array $vertices) {
+		$content = '';
+		foreach ($vertices as $vertex) {
+			if ($content !== '') {
+				$content .= ',';
+			}
+			$content .= $vertex[0] . ',' . $vertex[1];
+		}
+		return $content;
+	}
+
 }
 
 ?>

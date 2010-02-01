@@ -32,7 +32,7 @@
  * @license     http://www.gnu.org/copyleft/gpl.html
  * @version     SVN: $Id$
  */
-class Tx_Gg_Ch_Helpers_DxfReader {
+class tx_ggch_Helpers_DxfReader {
 
 	protected $filename;
 	protected $handle;
@@ -41,7 +41,7 @@ class Tx_Gg_Ch_Helpers_DxfReader {
 	protected $line;
 
 	/**
-	 * Creates a new instance of the Tx_Gg_Ch_DxfReader.
+	 * Creates a new instance of the tx_ggch_Helpers_DxfReader.
 	 * 
 	 * @param	string		$filename
 	 */
@@ -320,7 +320,7 @@ class Tx_Gg_Ch_Helpers_DxfReader {
 	/**
 	 * Consumes a token from the input stream.
 	 * 
-	 * @return	Tx_Gg_Ch_Helpers_DxfReader		This instance to allow method chaining
+	 * @return	tx_ggch_Helpers_DxfReader		This instance to allow method chaining
 	 */
 	protected function consume($str) {
 		$line = $this->readLine();
@@ -333,7 +333,7 @@ class Tx_Gg_Ch_Helpers_DxfReader {
 	/**
 	 * "Unconsumes" a token from the input stream.
 	 * 
-	 * @return	Tx_Gg_Ch_Helpers_DxfReader		this instance to allow method chaining
+	 * @return	tx_ggch_Helpers_DxfReader		this instance to allow method chaining
 	 */
 	protected function unconsume($str) {
 		$this->line--;
@@ -365,28 +365,9 @@ class Tx_Gg_Ch_Helpers_DxfReader {
 
 }
 
-$reader = new Tx_Gg_Ch_Helpers_DxfReader('../../Resources/Private/demo.dxf');
-$data = $reader->parse();
 
-// -----------------------------
-
-require_once('Coordinates.php');
-
-function ggPolylineToGgmapOverlay(array $polyline) {	
-	if ($polyline['type'] !== 'POLYLINE') {
-		throw new Exception('Not a GG polyline.', 1265008560);
-	}
-	$ggmapVertices = array();
-	foreach ($polyline['vertices'] as $vertex) {
-		$x = $vertex['x'];
-		$y = $vertex['y'];
-		$lat = Tx_Gg_Ch_Helpers_Coordinates::CHtoWGSlat($x, $y);
-		$lng = Tx_Gg_Ch_Helpers_Coordinates::CHtoWGSlong($x, $y);
-		$ggmapVertices[] = array($lat, $lng);
-	}
-	return $ggmapVertices;
+if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/gg_ch/Classes/Helpers/DxfReader.php']) {
+	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/gg_ch/Classes/Helpers/DxfReader.php']);
 }
 
-$gemeinde = $data['ENTITIES'][33];
-print_r(ggPolylineToGgmapOverlay($gemeinde));
 ?>

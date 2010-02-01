@@ -36,7 +36,7 @@
  * @license     http://www.gnu.org/copyleft/gpl.html
  * @version     SVN: $Id$
  */
-class Tx_Gg_Ch_Helpers_Coordinates {
+class tx_ggch_Helpers_Coordinates {
 
 	/**
 	 * Converts WGS latitude / longitude (° dec) to CH x.
@@ -198,6 +198,11 @@ class Tx_Gg_Ch_Helpers_Coordinates {
 		return $sec + $min * 60 + $deg * 3600;
 	}
 
+}
+
+
+if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/gg_ch/Classes/Helpers/Coordinates.php']) {
+	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/gg_ch/Classes/Helpers/Coordinates.php']);
 }
 
 ?>
